@@ -6,7 +6,7 @@ function initializeReveal() {
     // Full list of configuration options available at:
     // https://github.com/hakimel/reveal.js#configuration
 
-    Reveal.initialize({
+    let deck = new Reveal({
         controls: true,
         progress: true,
         history: true,
@@ -14,65 +14,12 @@ function initializeReveal() {
         transition: 'slide', // none/fade/slide/convex/concave/zoom
         transitionSpeed: isPreview() ? 'fast' : 'default',
         embedded: isPreview() ? true : false,
+        plugins: [RevealMarkdown, RevealHighlight, RevealSearch, RevealNotes, RevealMath]
 
-        // Optional reveal.js plugins
-        dependencies: [{
-            src: '/static/reveal.js/lib/js/classList.js',
-            condition: function () {
-                return !document.body.classList;
-            }
-        },
-
-        // Interpret Markdown in <section> elements
-        {
-            src: '/static/reveal.js/plugin/markdown/marked.js',
-            condition: function () {
-                return !!document.querySelector('[data-markdown]');
-            }
-        }, {
-            src: '/static/reveal.js/plugin/markdown/markdown.js',
-            condition: function () {
-                return !!document.querySelector('[data-markdown]');
-            }
-        },
-
-        // Syntax highlight for <code> elements
-        {
-            src: '/static/reveal.js/plugin/highlight/highlight.js',
-            async: true,
-            callback: function () {
-                hljs.initHighlightingOnLoad();
-            }
-        },
-
-        // Zoom in and out with Alt+click
-        {
-            src: '/static/reveal.js/plugin/zoom-js/zoom.js',
-            async: true
-        },
-
-        // Speaker notes
-        {
-            src: '/static/reveal.js/plugin/notes/notes.js',
-            async: true
-        },
-
-        // MathJax
-        {
-            src: '/static/reveal.js/plugin/math/math.js',
-            async: true
-        },
-
-        {
-            src: '/static/reveal.js/lib/js/classList.js',
-            condition: function () {
-                return !document.body.classList;
-            }
-        }
-        ]
-    });
-
+    })
+    deck.initialize()
     themesCtrl();
+    return deck;
 }
 
 function highlightAnyCodeBlocks() {
@@ -114,7 +61,7 @@ function externalLinksInNewWindow() {
 }
 
 insertMarkdownReference();
-initializeReveal();
+let deck = initializeReveal();
 
 function themesCtrl() {
     var defaultTheme = "black.css",
@@ -161,4 +108,4 @@ function themesCtrl() {
 // inter window message (using the reveal rpc api)
 // (yes, reveal has an rpc api!)
 // see save.js
-Reveal.reloadMarkdown = reloadMarkdown;
+deck.reloadMarkdown = reloadMarkdown;

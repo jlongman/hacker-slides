@@ -1,12 +1,19 @@
 GIT_SUMMARY := $(shell git describe --tags --dirty --always)
-REPO=msoedov/hacker-slides
+REPO=jlongman/hacker-slides
+DOCKER_IMAGE_APP := $(REPO)-app:$(GIT_SUMMARY)
 DOCKER_IMAGE := $(REPO):$(GIT_SUMMARY)
 default: repo
 
 repo:
+	@echo $(DOCKER_IMAGE_APP)
 	@echo $(DOCKER_IMAGE)
 
-build:
+build-app:
+	@docker build -t $(DOCKER_IMAGE_APP) ./app
+	@docker tag $(DOCKER_IMAGE_APP) $(REPO)
+
+
+build: build-app
 	@docker build -t $(DOCKER_IMAGE) .
 	@docker tag $(DOCKER_IMAGE) $(REPO)
 
