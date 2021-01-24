@@ -1,8 +1,6 @@
 FROM hacker-slides-go:latest AS compiler
 ENV VERSION=1.0.0
 
-
-
 FROM node:12-slim as revealjs
 # Grab reveal.js code
 ENV REVEAL_VERSION=4.1.0 \
@@ -23,8 +21,17 @@ WORKDIR /revealjs
 # Prepare the reveal.js installation.
 RUN npm install && npm install --global gulp-cli
 RUN gulp build
-#RUN sed -i Gruntfile.js -e "s/files: \[ 'index\.html'\]/files: [ 'slides\/**' ]/"
 
+# install plugins, must still be added to source
+#RUN npm install reveal.js-plugins && cp -pr node_modules/reveal.js-plugins-plugins/* plugin
+
+ENV REVEAL_PLUGINS_VERSION=4.0.2
+RUN wget -O /tmp/reveal.js-plugins.tar.gz  https://codeload.github.com/rajgoel/reveal.js-plugins/tar.gz/$REVEAL_PLUGINS_VERSION && \
+    tar -xzf /tmp/reveal.js-plugins.tar.gz --strip-components=1 -C plugin && \
+    rm -f /tmp/reveal.js-plugins.tar.gz
+
+
+# core
 FROM alpine:3.8
 
 WORKDIR /srv
@@ -35,7 +42,7 @@ COPY --from=compiler /bin/app /bin/app
 COPY static static
 COPY --from=revealjs /revealjs/plugin/   static/reveal.js/plugin/
 COPY --from=revealjs /revealjs/dist/*.css /revealjs/dist/theme/ static/reveal.js/css/
-COPY --from=revealjs /revealjs/dist/*.js  static/reveal.js/js/
+COPY --from=revealjs /revealjs/dist/*.js*  static/reveal.js/js/
 
 COPY templates templates
 COPY initial-slides.md initial-slides.md

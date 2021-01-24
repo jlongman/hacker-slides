@@ -1,6 +1,9 @@
 function isPreview() {
-    return !!window.location.search.match(/preview/gi);
+    const preview = !!window.location.search.match(/preview/gi);
+    console.log("Preview " + preview);
+    return preview;
 }
+
 
 function initializeReveal() {
     // Full list of configuration options available at:
@@ -14,12 +17,32 @@ function initializeReveal() {
         transition: 'slide', // none/fade/slide/convex/concave/zoom
         transitionSpeed: isPreview() ? 'fast' : 'default',
         embedded: isPreview() ? true : false,
-        plugins: [RevealMarkdown, RevealHighlight, RevealSearch, RevealNotes, RevealMath]
+        plugins: [
+            RevealMarkdown,
+            RevealHighlight,
+            RevealSearch,
+            RevealNotes,
+            RevealMath,
+
+            RevealAnything,
+            RevealAudioSlideshow,
+            RevealChalkboard,
+            RevealChart,
+            RevealCustomControls,
+            RevealEmbedTweet,
+            RevealFullscreen,
+
+        ]
 
     })
-    deck.initialize()
+    deck.initialize();
+
     themesCtrl();
     return deck;
+}
+
+function slide(slide) {
+    deck.slide(slide);
 }
 
 function highlightAnyCodeBlocks() {
@@ -43,13 +66,13 @@ function insertMarkdownReference() {
 }
 
 function scrollToCurrentSlide() {
-    var i = Reveal.getIndices();
-    Reveal.slide(i.h, i.v, i.f);
+    var i = deck.getIndices();
+    deck.slide(i.h, i.v, i.f);
 }
 
 function reloadMarkdown() {
     insertMarkdownReference();
-    RevealMarkdown.initialize();
+    deck.initialize();
     highlightAnyCodeBlocks();
     scrollToCurrentSlide();
 }
@@ -73,6 +96,7 @@ function themesCtrl() {
         cssEl.attr("href", "/static/reveal.js/css/theme/" + theme);
         localStorage.setItem('theme?', theme);
     }
+
     setTheme(currentTheme);
 
     if (!isPreview()) {
